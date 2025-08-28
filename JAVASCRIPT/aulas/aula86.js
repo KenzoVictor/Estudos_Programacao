@@ -5,16 +5,30 @@ function rand(min, max) {
     return Math.floor(r);
 }
 
-function esperar(msg, tempo, cb) {
-    setTimeout(() => {
-        console.log(msg);
-        if(cb) cb();
-    }, tempo);
+function esperar(msg, tempo) {
+    return new Promise((resolve, reject) => {
+        if(typeof msg !== 'string')reject('BAD VALUE');
+        setTimeout(() => {
+            resolve(msg);
+        }, tempo);
+    });
 }
 
-esperar('Frase 1', rand(1, 3), function(){
-    esperar('Frase 2', rand(1, 3), function(){
-        esperar('Frase 3', rand(1, 3));
-    });
-});
+esperar('Frase 1', rand(1, 3))
+.then(resposta => {
+    console.log(resposta);
+    return esperar('Frase 2', rand(1, 3));
+})
+.then(resposta => {
+    console.log(resposta);
+    return esperar('Frase 3', rand(1, 3));
+})
+.then(resposta => {
+    console.log(resposta);
+})
+.catch(e => {
+    console.log('ERRO: ', e);
+})
+
+console.log('Isso vem antes do promise');
 
