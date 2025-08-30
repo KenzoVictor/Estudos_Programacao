@@ -1,14 +1,16 @@
 const request = obj => {
-    const xhr = new XMLHttpRequest(); // xhr é XML Http Request
-    xhr.open(obj.method , obj.url, true);
-    xhr.send();
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest(); // xhr é XML Http Request
+        xhr.open(obj.method , obj.url, true);
+        xhr.send();
     
-    xhr.addEventListener('load', () => {
+        xhr.addEventListener('load', () => {
         if(xhr.status >= 200 && xhr.status < 300) {
-            obj.success(xhr.responseText);
-        } else {
-            obj.error(xhr.statusText);
-        }
+                resolve(xhr.responseText);
+            } else {
+                reject(xhr.statusText);
+            }
+        });
     });
 };
 
@@ -21,19 +23,13 @@ document.addEventListener('click', e => {
     }
 });
 
-function carregaPagina(el) {
+async function carregaPagina(el) {
     const href = el.href;
-
-    request({
+    const response = await request({
         method: 'GET',
         url: href,
-        success: function(response) {
-           carregaResultado(response);
-        },
-        error: function(error) {
-            console.log(error); 
-        }
     });
+    carregaResultado(response);
 }
 
 function carregaResultado(response) {
